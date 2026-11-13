@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0f3d3e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Discount Calc">
+<title>Discount Calculator</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+  :root {
+    --bg: #f3f1ec; --card: #ffffff; --ink: #1b1f1e; --muted: #6a6f6c;
+    --brand: #0f3d3e; --accent: #e0a526; --good: #1d7a46; --bad: #b3362b; --line: #dcd8cf;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 480px; margin: 0 auto; }
+
+  /* ---------- sticky results ---------- */
+  .top { position: sticky; top: 0; z-index: 5; background: var(--brand); color: #fff;
+    padding: 10px 12px 12px; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+  .titlebar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .title { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+  .clear { border: none; border-radius: 999px; padding: 8px 16px; font-size: 15px; font-weight: 800;
+    background: var(--accent); color: #2a1e00; }
+  .res { display: flex; gap: 8px; }
+  .box { flex: 1; background: rgba(255,255,255,.08); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+  .box .k { font-size: 12px; opacity: .8; }
+  .box .v { font-size: 32px; font-weight: 800; line-height: 1.1; margin: 2px 0; color: #ffd36b; }
+  .box .v.up { color: #ff9c90; }
+  .box .s { font-size: 13px; opacity: .9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trail { font-size: 13px; margin-top: 8px; opacity: .9; line-height: 1.4; }
+  .trail:empty { display: none; }
+  .err { font-size: 13px; margin-top: 6px; color: #ffb3a8; font-weight: 600; }
+  .err:empty { display: none; }
+
+  /* ---------- inputs ---------- */
+  main { padding: 10px 12px 24px; }
+  .card { background: var(--card); border-radius: 14px; padding: 12px; margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .lbl { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
+  .grid2 { display: flex; gap: 8px; }
+  .grid2 > div { flex: 1; min-width: 0; }
+  .in { position: relative; }
+  .in .pre, .in .suf { position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 17px; color: var(--muted); pointer-events: none; }
+  .in .pre { left: 10px; } .in .suf { right: 10px; }
+  input { width: 100%; font-size: 20px; font-weight: 600; padding: 10px 10px 10px 28px;
+    border: 2px solid var(--line); border-radius: 10px; background: #fbfaf7; color: var(--ink);
+    outline: none; -webkit-appearance: none; }
+  input.np { padding-left: 10px; text-align: center; }
+  input.ps { padding-right: 26px; }
+  input:focus { border-color: var(--brand); background: #fff; }
+
+  .dealrow { display: flex; align-items: flex-end; gap: 6px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .chip { border: none; border-radius: 999px; padding: 7px 12px; font-size: 14px; font-weight: 700;
+    background: #e9eeed; color: var(--brand); }
+  .chip.on { background: var(--brand); color: #fff; }
+  .plus { font-size: 20px; font-weight: 800; color: var(--muted); padding-bottom: 10px; }
+  .dealrow .in { flex: 1; }
+
+  .lessgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .addless { border: 2px dashed var(--line); background: none; border-radius: 10px; font-size: 22px;
+    font-weight: 700; color: var(--muted); }
+  button:active { transform: scale(.97); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- RESULTS (always on top) -->
+  <div class="top">
+    <div class="titlebar">
+      <div class="title">Discount Calculator</div>
+      <button type="button" class="clear" id="clear">✕ Clear all</button>
+    </div>
+    <div class="res">
+      <div class="box">
+        <div class="k" id="oK">Offer discount</div>
+        <div class="v" id="oV">–</div>
+        <div class="s" id="oS">List vs offer</div>
+      </div>
+      <div class="box">
+        <div class="k">Net discount</div>
+        <div class="v" id="nV">–</div>
+        <div class="s" id="nS">Deal + less</div>
+      </div>
+    </div>
+    <div class="trail" id="trail"></div>
+    <div class="err" id="err"></div>
+  </div>
+
+  <main>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <span class="lbl">List price</span>
+          <div class="in"><span class="pre">₱</span><input id="list" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+        </div>
+        <div>
+          <span class="lbl">Offer price</span>
+          <div class="in"><span class="pre">₱</span><input id="offer" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="lbl">Free-goods deal</span>
+      <div class="chips">
+        <button type="button" class="chip" data-b="5" data-f="1">5+1</button>
+        <button type="button" class="chip" data-b="10" data-f="1">10+1</button>
+        <button type="button" class="chip" data-b="12" data-f="1">12+1</button>
+        <button type="button" class="chip" data-b="20" data-f="1">20+1</button>
+        <button type="button" class="chip" data-b="" data-f="">None</button>
+      </div>
+      <div class="dealrow">
+        <div class="in"><input id="buy" class="np" type="text" inputmode="numeric" autocomplete="off" placeholder="Buy"></div>
+        <div class="plus">+</div>
+        <div class="in"><input id="free" class="np" type="text" inputmode="numeric" autocomplete="off" placeholder="Free"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="lbl">Less (stacked discounts)</span>
+      <div class="lessgrid" id="lessGrid">
+        <button type="button" class="addless" id="addLess" aria-label="Add another less">+</button>
+      </div>
+      <div class="hint">Leave a box empty if not needed. Net cost uses the list price above.</div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const listEl = $('list'), offerEl = $('offer'), buyEl = $('buy'), freeEl = $('free');
+  const lessGrid = $('lessGrid'), addBtn = $('addLess');
+
+  function parse(v) {
+    v = String(v).replace(/[,\s₱%]/g, '');
+    if (v === '' || v === '.') return null;
+    const n = Number(v);
+    return isFinite(n) ? n : NaN;
+  }
+  const fmt2 = n => n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const peso = n => '₱' + fmt2(n);
+  const pct = n => fmt2(Math.round(n * 100) / 100) + '%';
+  const pctS = n => (Math.round(n * 100) / 100).toLocaleString('en-PH', { maximumFractionDigits: 2 }) + '%';
+
+  function addLess() {
+    const d = document.createElement('div');
+    d.className = 'in';
+    d.innerHTML = '<input class="np ps less" type="text" inputmode="decimal" autocomplete="off" placeholder="less"><span class="suf">%</span>';
+    d.querySelector('input').addEventListener('input', calc);
+    lessGrid.insertBefore(d, addBtn);
+    return d.querySelector('input');
+  }
+
+  function calc() {
+    const errs = [];
+    const L = parse(listEl.value), O = parse(offerEl.value);
+    const B = parse(buyEl.value), F = parse(freeEl.value);
+    const lessRaw = [...lessGrid.querySelectorAll('input.less')].map(i => parse(i.value));
+
+    // highlight matching preset chip
+    document.querySelectorAll('.chip').forEach(c => {
+      c.classList.toggle('on', c.dataset.b === buyEl.value.trim() && c.dataset.f === freeEl.value.trim());
+    });
+
+    // list price validity (shared)
+    let listOk = false;
+    if (Number.isNaN(L)) errs.push('List price: numbers only.');
+    else if (L !== null && L <= 0) errs.push('List price must be more than zero.');
+    else if (L !== null) listOk = true;
+
+    // ---- offer discount ----
+    const oV = $('oV'), oS = $('oS'), oK = $('oK');
+    oV.className = 'v'; oK.textContent = 'Offer discount';
+    if (Number.isNaN(O)) { errs.push('Offer price: numbers only.'); oV.textContent = '–'; oS.textContent = 'List vs offer'; }
+    else if (O !== null && O < 0) { errs.push('Offer price cannot be negative.'); oV.textContent = '–'; oS.textContent = 'List vs offer'; }
+    else if (!listOk || O === null) { oV.textContent = '–'; oS.textContent = 'List vs offer'; }
+    else {
+      const diff = L - O;
+      if (diff >= 0) {
+        oV.textContent = pct(diff / L * 100);
+        oS.textContent = peso(diff) + ' off';
+      } else {
+        oK.textContent = 'Above list by';
+        oV.className = 'v up';
+        oV.textContent = pct(-diff / L * 100);
+        oS.textContent = peso(-diff) + ' higher';
+      }
+    }
+
+    // ---- deal + less ----
+    let factor = 1, dealOk = true, hasDeal = false;
+    const parts = [];
+    if (Number.isNaN(B) || Number.isNaN(F)) { errs.push('Deal: numbers only.'); dealOk = false; }
+    else if (B !== null || F !== null) {
+      if (B === null || F === null) { errs.push('Deal: enter both Buy and Free.'); dealOk = false; }
+      else if (B <= 0) { errs.push('Deal: Buy must be more than zero.'); dealOk = false; }
+      else if (F < 0) { errs.push('Deal: Free cannot be negative.'); dealOk = false; }
+      else { hasDeal = true; factor = B / (B + F); parts.push({ t: B + '+' + F, f: factor }); }
+    }
+    let lessOk = true;
+    for (const v of lessRaw) {
+      if (v === null) continue;
+      if (Number.isNaN(v)) { errs.push('Less: numbers only.'); lessOk = false; break; }
+      if (v < 0 || v >= 100) { errs.push('Less must be from 0 to below 100%.'); lessOk = false; break; }
+      parts.push({ t: 'less ' + pctS(v), f: 1 - v / 100 });
+    }
+
+    const nV = $('nV'), nS = $('nS'), trail = $('trail');
+    trail.textContent = '';
+    if (!dealOk || !lessOk || parts.length === 0) {
+      nV.textContent = '–'; nS.textContent = 'Deal + less';
+    } else {
+      const total = parts.reduce((a, p) => a * p.f, 1);
+      nV.textContent = pct((1 - total) * 100);
+      if (listOk) {
+        nS.textContent = 'Net ' + peso(L * total);
+        let run = L; const seq = [peso(run)];
+        parts.forEach(p => { run *= p.f; seq.push(p.t + ' ' + peso(run)); });
+        trail.textContent = seq.join(' → ');
+      } else {
+        nS.textContent = parts.map(p => p.t).join(', ');
+      }
+    }
+
+    $('err').textContent = errs.join(' ');
+  }
+
+  [listEl, offerEl, buyEl, freeEl].forEach(el => el.addEventListener('input', calc));
+  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    buyEl.value = c.dataset.b; freeEl.value = c.dataset.f; calc();
+  }));
+  addBtn.addEventListener('click', () => addLess().focus());
+
+  function resetLess() {
+    lessGrid.querySelectorAll('.in').forEach(n => n.remove());
+    addLess(); addLess();
+  }
+  $('clear').addEventListener('click', () => {
+    [listEl, offerEl, buyEl, freeEl].forEach(el => el.value = '');
+    resetLess(); calc(); window.scrollTo(0, 0); listEl.focus();
+  });
+
+  resetLess(); calc();
+
+  // offline support: lets the phone keep a copy of the app
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
