@@ -1,6 +1,6 @@
 // Keeps a copy of the calculator on the device so it opens without internet.
 // When online it loads the newest version; when offline it uses the saved copy.
-const CACHE = 'discount-calc-v1';
+const CACHE = 'discount-calc-v5';
 const FILES = ['./', './index.html', './manifest.webmanifest',
                './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 

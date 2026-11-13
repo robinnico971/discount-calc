@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Discount Calc">
-<title>Discount Calculator</title>
+<title>Calculator</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -70,15 +70,134 @@
     font-weight: 700; color: var(--muted); }
   button:active { transform: scale(.97); }
   .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  /* ---------- tabs ---------- */
+  .tabs { display: flex; background: rgba(255,255,255,.12); border-radius: 999px; padding: 3px; }
+  .tab { border: none; background: none; color: #fff; opacity: .75; font-size: 14px; font-weight: 800;
+    padding: 7px 14px; border-radius: 999px; }
+  .tab.on { background: #fff; color: var(--brand); opacity: 1; }
+  section[hidden] { display: none; }
+
+  /* ---------- VAT tab ---------- */
+  .ratebar { display: flex; gap: 10px; }
+  .ratebar > div { flex: 1; }
+  .seg { display: flex; background: #e9eeed; border-radius: 10px; padding: 3px; }
+  .seg button { flex: 1; border: none; background: none; border-radius: 8px; padding: 8px 0;
+    font-size: 15px; font-weight: 800; color: var(--muted); }
+  .seg button.on { background: var(--brand); color: #fff; }
+  .rc { padding: 0; overflow: hidden; }
+  .rchead { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f7f5f0;
+    border-bottom: 1px solid var(--line); }
+  .rchead .num { font-size: 12px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+  .rchead input { font-size: 17px; padding: 8px 10px; }
+  .xbtn { border: none; background: none; color: var(--muted); font-size: 20px; font-weight: 700; padding: 4px 6px; }
+  .items { padding: 4px 12px 0; }
+  .ihead, .item { display: grid; grid-template-columns: 1fr 78px 58px; gap: 6px; align-items: center; }
+  .ihead { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; padding: 6px 0 2px; }
+  .item { padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .item input { font-size: 18px; padding: 8px 8px 8px 24px; }
+  .item .in .pre { left: 8px; font-size: 15px; }
+  .item input.ds { padding: 8px 18px 8px 6px; text-align: center; font-size: 16px; }
+  .item .in .suf { right: 6px; font-size: 13px; }
+  .ve { display: flex; border-radius: 8px; overflow: hidden; border: 2px solid var(--line); }
+  .ve button { flex: 1; border: none; padding: 9px 0; font-size: 15px; font-weight: 800;
+    background: #fbfaf7; color: #b5b1a8; }
+  .ve button.on.V { background: var(--good); color: #fff; }
+  .ve button.on.E { background: #c55a11; color: #fff; }
+  .inet { grid-column: 1 / -1; font-size: 12px; color: var(--muted); margin-top: -2px; }
+  .inet:empty { display: none; }
+  .inet b { color: var(--ink); }
+  .rcfoot { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; }
+  .rcfoot .lab { font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+  .rcfoot .amt { font-size: 20px; font-weight: 800; color: var(--brand); }
+  .addrc { width: 100%; border: 2px dashed var(--line); background: none; border-radius: 14px;
+    padding: 14px; font-size: 16px; font-weight: 800; color: var(--brand); margin-bottom: 10px; }
+  .sumrow { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #eee; font-size: 15px; }
+  .sumrow span:last-child { font-weight: 700; }
+  .sumrow.tot { border-bottom: none; border-top: 2px solid var(--ink); margin-top: 4px; padding-top: 9px;
+    font-size: 17px; font-weight: 800; }
+  .sumrow.sm { font-size: 13px; color: var(--muted); border-bottom: none; padding: 3px 0; }
+  .words { font-size: 13px; font-style: italic; color: var(--ink); margin-top: 8px; background: #f7f5f0;
+    border-radius: 8px; padding: 8px 10px; }
+  .words:empty { display: none; }
+  .pdgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pdgrid input { font-size: 16px; padding: 9px 10px; text-align: left; }
+  .printbtn { width: 100%; margin-top: 10px; border: none; border-radius: 10px; padding: 13px; font-size: 16px;
+    font-weight: 800; background: var(--brand); color: #fff; }
+
+  .kbd { display: none; font-size: 11px; font-weight: 700; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 5px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; }
+  @media (max-width: 899px) {
+    #tab-vat .top { padding: 8px 12px 10px; }
+    #tab-vat .titlebar { margin-bottom: 6px; }
+    #tab-vat .box { padding: 6px 10px; }
+    #tab-vat .box .v { font-size: 24px; }
+    #tab-vat .trail { display: none; }
+  }
+  @media (min-width: 900px) { .kbd { display: inline-block; } }
+
+  /* ---------- VAT layout: phone = one column, big screen = two columns ---------- */
+  .vmain { display: flex; flex-direction: column; }
+  .vright, .vleft, .vright2 { display: contents; }
+  .o1 { order: 1; } .o2 { order: 2; } .o3 { order: 3; } .o4 { order: 4; } .o5 { order: 5; } .o6 { order: 6; }
+  @media (min-width: 900px) {
+    body.vatmode .wrap { max-width: 1180px; }
+    body.vatmode .top { padding: 12px 20px 14px; }
+    body.vatmode .res { max-width: 760px; }
+    .vmain { display: grid; grid-template-columns: minmax(0, 1fr) 380px; grid-template-rows: auto 1fr;
+      gap: 0 16px; align-items: start; padding: 16px 20px 32px; }
+    .vleft { display: block; grid-column: 1; grid-row: 1 / span 2; }
+    .vright { display: block; grid-column: 2; grid-row: 1; }
+    .vright2 { display: block; grid-column: 2; grid-row: 2; position: sticky; top: calc(var(--toph, 160px) + 12px);
+      max-height: calc(100vh - var(--toph, 160px) - 24px); overflow-y: auto; }
+    .ihead, .item { grid-template-columns: minmax(0, 1fr) 96px 80px minmax(0, 1.2fr); }
+    .inet { grid-column: auto; margin: 0; text-align: right; font-size: 13px; }
+    .inet:empty { display: block; }
+    .ihead span:nth-child(3) { text-align: center; }
+    .ihead::after { content: 'Net'; text-align: right; }
+    .rchead input { max-width: 320px; }
+  }
+
+  /* ---------- printed voucher ---------- */
+  #voucher { display: none; }
+  @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    html, body { background: #fff; }
+    body.vatmode .wrap { display: none !important; }
+    body.vatmode #voucher { display: block; color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 11pt; }
+  }
+  #voucher h1 { font-size: 18pt; margin: 0 0 2px; letter-spacing: .04em; }
+  #voucher .sub { font-size: 9pt; color: #555; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1.5px solid #000; }
+  #voucher .hdr { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 12px; }
+  #voucher .fields div { margin: 3px 0; }
+  #voucher .fields span { display: inline-block; width: 92px; color: #555; font-size: 9.5pt; }
+  #voucher .fields b { border-bottom: 1px solid #999; display: inline-block; min-width: 200px; padding-bottom: 1px; }
+  #voucher .amtbox { border: 2px solid #000; padding: 8px 14px; text-align: right; min-width: 190px; }
+  #voucher .amtbox .k { font-size: 8.5pt; color: #555; letter-spacing: .06em; }
+  #voucher .amtbox .v { font-size: 17pt; font-weight: 800; }
+  #voucher .wordsp { border: 1px solid #bbb; background: #f4f4f4; padding: 6px 10px; font-style: italic; font-weight: 700;
+    margin-bottom: 12px; font-size: 10.5pt; box-sizing: border-box; width: 100%; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #voucher table { width: 100%; table-layout: auto; border-collapse: collapse; font-size: 10pt; }
+  #voucher th { font-size: 8pt; text-transform: uppercase; letter-spacing: .04em; color: #333; text-align: right;
+    border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 6px 5px; }
+  #voucher th:nth-child(-n+2), #voucher td:nth-child(-n+2) { text-align: left; }
+  #voucher td { text-align: right; padding: 5px; border-bottom: 1px solid #ddd; }
+  #voucher tr.gt td { font-weight: 800; border-top: 1.5px solid #000; border-bottom: 3px double #000; }
+  #voucher .note { font-size: 8.5pt; color: #555; margin-top: 8px; }
+  #voucher .sigs { display: flex; gap: 28px; margin-top: 46px; }
+  #voucher .sigs div { flex: 1; text-align: center; font-size: 9pt; color: #555; }
+  #voucher .sigs b { display: block; border-bottom: 1px solid #000; min-height: 18px; color: #000; font-size: 10.5pt; margin-bottom: 4px; }
 </style>
 </head>
 <body>
 <div class="wrap">
+<section id="tab-disc">
 
   <!-- RESULTS (always on top) -->
   <div class="top">
     <div class="titlebar">
-      <div class="title">Discount Calculator</div>
+      <div class="tabs"><button type="button" class="tab on" data-tab="disc">Discount</button><button type="button" class="tab" data-tab="vat">VAT</button></div>
       <button type="button" class="clear" id="clear">✕ Clear all</button>
     </div>
     <div class="res">
@@ -135,7 +254,71 @@
       <div class="hint">Leave a box empty if not needed. Net cost uses the list price above.</div>
     </div>
   </main>
+</section>
+
+<!-- ================= VAT / SUPPLIER PAYMENT ================= -->
+<section id="tab-vat" hidden>
+  <div class="top">
+    <div class="titlebar">
+      <div class="tabs"><button type="button" class="tab" data-tab="disc">Discount</button><button type="button" class="tab on" data-tab="vat">VAT</button></div>
+      <button type="button" class="clear" id="vClear">✕ Next supplier</button>
+    </div>
+    <div class="res">
+      <div class="box">
+        <div class="k">Cheque amount</div>
+        <div class="v" id="vPay">–</div>
+        <div class="s" id="vCount">0 receipts</div>
+      </div>
+      <div class="box">
+        <div class="k">Total deductions</div>
+        <div class="v" id="vDed">–</div>
+        <div class="s" id="vDedS">Discount + tax</div>
+      </div>
+    </div>
+    <div class="trail" id="vTrail"></div>
+    <div class="err" id="vErr"></div>
+  </div>
+
+  <main class="vmain">
+    <div class="vright">
+    <div class="card o1">
+      <span class="lbl">Payment details <span style="font-weight:400">(for the printed voucher)</span></span>
+      <div class="pdgrid">
+        <input class="np" id="pSup" type="text" autocomplete="off" placeholder="Supplier / payee">
+        <input class="np" id="pChq" type="text" autocomplete="off" placeholder="Cheque no.">
+        <input class="np" id="pDate" type="date">
+        <input class="np" id="pPrep" type="text" autocomplete="off" placeholder="Prepared by">
+      </div>
+    </div>
+
+    <div class="card o2">
+      <div class="ratebar">
+        <div><span class="lbl">V = VATable rate</span>
+          <div class="seg" id="segV"><button type="button" data-r="0.01">1%</button><button type="button" data-r="0.005">0.5%</button></div></div>
+        <div><span class="lbl">E = Exempt rate</span>
+          <div class="seg" id="segE"><button type="button" data-r="0.01">1%</button><button type="button" data-r="0.005">0.5%</button></div></div>
+      </div>
+    </div>
+
+    </div>
+    <div class="vleft">
+    <div id="receipts" class="o3"></div>
+    <button type="button" class="addrc o4" id="addRc">+ Add receipt <span class="kbd">Ctrl + Enter</span></button>
+    </div>
+    <div class="vright2">
+    <div class="card o5">
+      <span class="lbl">Payment summary</span>
+      <div id="vSum"></div>
+      <div class="words" id="vWords"></div>
+      <button type="button" class="printbtn" id="vPrint">🖨 Print payment voucher</button>
+    </div>
+    <div class="hint o6"><b>Phone:</b> type the amount, tap V or E. <b>Keyboard:</b> type the amount, press <b>V</b> or <b>E</b>, then <b>Enter</b> for the next item (<b>Tab</b> to add a Disc. %). Press <b>Enter</b> on an empty line (or Ctrl + Enter) for a new receipt. Disc. % is optional and comes off before tax. Erase an amount to remove that line. Tip: 1120+560 adds amounts.</div>
+    </div>
+  </main>
+</section>
 </div>
+
+<div id="voucher"></div>
 
 <script>
   const $ = id => document.getElementById(id);
@@ -252,6 +435,277 @@
   });
 
   resetLess(); calc();
+
+  // ================= tabs =================
+  function showTab(t) {
+    $('tab-disc').hidden = t !== 'disc';
+    $('tab-vat').hidden = t !== 'vat';
+    document.body.classList.toggle('vatmode', t === 'vat');
+    try { localStorage.setItem('calcTab', t); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  let startTab = 'disc';
+  try { startTab = localStorage.getItem('calcTab') || 'disc'; } catch (e) {}
+  showTab(startTab === 'vat' ? 'vat' : 'disc');
+
+  // ================= VAT / supplier payment =================
+  (function () {
+    const KEY = 'vatCalc1';
+    const r2 = n => Math.round((n + Number.EPSILON) * 100) / 100;
+    const box = $('receipts');
+    const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+    let st = { vr: 0.01, er: 0.01, rc: [], sup: '', chq: '', date: today(), prep: '' };   // rc: [{no, items:[{a:'', t:'V', d:''}]}]
+
+    // amount: numbers, commas, and + to add (e.g. 1120+560)
+    function amt(v) {
+      v = String(v).replace(/[,\s₱]/g, '');
+      if (v === '') return null;
+      if (!/^[0-9.+]+$/.test(v) || /^\+|\+$|\+\+/.test(v)) return NaN;
+      let sum = 0;
+      for (const p of v.split('+')) { const n = Number(p); if (!isFinite(n) || p === '' || p === '.') return NaN; sum += n; }
+      return sum;
+    }
+    function itemCalc(it) {
+      const a = amt(it.a), d = parse(it.d);
+      if (a === null) return null;
+      if (Number.isNaN(a)) return { err: 'Amount: numbers only (you can use +).' };
+      if (Number.isNaN(d) || (d !== null && (d < 0 || d > 100))) return { err: 'Addtl. discount: 0 to 100 only.' };
+      const after = r2(a * (1 - (d || 0) / 100));
+      const tax = r2(it.t === 'V' ? after / 1.12 * st.vr : after * st.er);
+      return { a, disc: r2(a - after), after, tax, net: r2(after - tax) };
+    }
+
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+    function load() {
+      try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && Array.isArray(x.rc)) st = Object.assign(st, x); } catch (e) {}
+    }
+    const blankItem = t => ({ a: '', t: t || 'V', d: '' });
+    function ensureBlank(rc) {   // always keep one empty line at the end of each receipt
+      const last = rc.items[rc.items.length - 1];
+      if (!last || last.a !== '' || last.d !== '') rc.items.push(blankItem(last ? last.t : 'V'));
+    }
+
+    // focus helper: put the cursor at the end of a field
+    const focusEnd = el => { if (!el) return; el.focus(); const p = el.value.length; try { el.setSelectionRange(p, p); } catch (e) {} };
+    const cardOf = ri => box.querySelectorAll('.card.rc')[ri];
+    const amtAt = (ri, ii) => { const c = cardOf(ri); return c ? c.querySelectorAll('.ia')[ii] : null; };
+
+    function newReceipt() {
+      // reuse an empty last receipt instead of stacking empty ones
+      const last = st.rc[st.rc.length - 1];
+      const empty = last && !last.no.trim() && !last.items.some(i => i.a !== '' || i.d !== '');
+      if (!empty) { st.rc.push({ no: '', items: [] }); render(); update(); }
+      const all = box.querySelectorAll('.rno'); focusEnd(all[all.length - 1]);
+      all[all.length - 1].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+
+    function makeRow(rc, ri, it, list) {
+      const row = document.createElement('div');
+      row.className = 'item';
+      row.innerHTML = `
+        <div class="in"><span class="pre">₱</span><input class="ia" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="0.00"></div>
+        <div class="ve"><button type="button" class="V" tabindex="-1">V</button><button type="button" class="E" tabindex="-1">E</button></div>
+        <div class="in"><input class="ds" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="–"><span class="suf">%</span></div>
+        <div class="inet"></div>`;
+      const ia = row.querySelector('.ia'), ds = row.querySelector('.ds');
+      ia.value = it.a; ds.value = it.d;
+      const idx = () => rc.items.indexOf(it);
+      const paintVE = () => row.querySelectorAll('.ve button').forEach(b => b.classList.toggle('on', b.classList.contains(it.t)));
+      paintVE();
+      const setType = t => { it.t = t; paintVE(); update(); };
+      row.querySelectorAll('.ve button').forEach(b => b.addEventListener('click', () => {
+        setType(b.classList.contains('V') ? 'V' : 'E');
+        if (it.a === '') ia.focus();                       // tapped V/E first → go type the amount
+        else { const nx = amtAt(ri, idx() + 1); if (nx && matchMedia('(min-width: 900px)').matches) nx.focus(); }
+      }));
+      const onEdit = () => {
+        it.a = ia.value; it.d = ds.value;
+        if (idx() === rc.items.length - 1 && (it.a !== '' || it.d !== '')) {   // typing on the blank line → add a fresh blank line below
+          const nb = blankItem(it.t); rc.items.push(nb); list.appendChild(makeRow(rc, ri, nb, list));
+        }
+        update();
+      };
+      ia.addEventListener('input', onEdit); ds.addEventListener('input', onEdit);
+      // remove a line whose amount was erased (except the blank line at the end)
+      ia.addEventListener('blur', () => setTimeout(() => {
+        const i = idx();
+        if (i > -1 && i < rc.items.length - 1 && it.a === '' && it.d === '' && !row.contains(document.activeElement)) {
+          rc.items.splice(i, 1); row.remove(); update();
+        }
+      }, 150));
+      // keyboard: V / E keys set the type, Enter goes to the next line,
+      // Enter on an empty last line starts a new receipt
+      const keys = e => {
+        const k = e.key.toLowerCase();
+        if (k === 'v' || k === 'e') { e.preventDefault(); setType(k.toUpperCase()); return; }
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const i = idx(), nx = amtAt(ri, i + 1);
+          if (e.target === ia && it.a === '' && i === rc.items.length - 1 && i > 0) { newReceipt(); return; }
+          if (nx) focusEnd(nx);
+        }
+      };
+      ia.addEventListener('keydown', keys); ds.addEventListener('keydown', keys);
+      return row;
+    }
+
+    function render() {
+      box.innerHTML = '';
+      st.rc.forEach((rc, ri) => {
+        rc.items = rc.items.filter((i, n) => n === rc.items.length - 1 || i.a !== '' || i.d !== '');   // tidy erased lines
+        ensureBlank(rc);
+        const c = document.createElement('div');
+        c.className = 'card rc';
+        c.innerHTML = `
+          <div class="rchead">
+            <span class="num">#${ri + 1}</span>
+            <input class="np rno" type="text" enterkeyhint="next" autocomplete="off" placeholder="Receipt no." value="">
+            <button type="button" class="xbtn" title="Remove receipt" tabindex="-1">✕</button>
+          </div>
+          <div class="items">
+            <div class="ihead"><span>Item amount</span><span style="text-align:center">V / E</span><span style="text-align:center">Disc.</span></div>
+          </div>
+          <div class="rcfoot"><span class="lab">Receipt subtotal</span><span class="amt">–</span></div>`;
+        const no = c.querySelector('.rno');
+        no.value = rc.no;
+        no.addEventListener('input', () => { rc.no = no.value; update(); });
+        no.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); focusEnd(amtAt(ri, 0)); } });
+        c.querySelector('.xbtn').addEventListener('click', () => {
+          const has = rc.items.some(i => i.a !== '') || rc.no;
+          if (has && !confirm('Remove receipt ' + (rc.no || '#' + (ri + 1)) + '?')) return;
+          st.rc.splice(ri, 1);
+          if (!st.rc.length) st.rc.push({ no: '', items: [] });
+          render(); update();
+        });
+        const list = c.querySelector('.items');
+        rc.items.forEach(it => list.appendChild(makeRow(rc, ri, it, list)));
+        box.appendChild(c);
+      });
+    }
+
+    function words(n) {
+      const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve',
+        'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+      const h3 = x => {
+        const h = Math.floor(x / 100), r = x % 100; let s = h ? ones[h] + ' Hundred' : '';
+        if (r) s += (s ? ' ' : '') + (r < 20 ? ones[r] : tens[Math.floor(r / 10)] + (r % 10 ? '-' + ones[r % 10] : ''));
+        return s;
+      };
+      const p = Math.floor(r2(n)), c = Math.round((r2(n) - p) * 100);
+      const parts = [], m = Math.floor(p / 1e6), t = Math.floor(p % 1e6 / 1000), u = p % 1000;
+      if (m) parts.push(h3(m) + ' Million'); if (t) parts.push(h3(t) + ' Thousand'); if (u) parts.push(h3(u));
+      return (parts.join(' ') || 'Zero') + ' Pesos' + (c ? ' and ' + String(c).padStart(2, '0') + '/100' : '') + ' Only';
+    }
+
+    const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const pctTxt = r => (r * 100).toLocaleString('en-PH', { maximumFractionDigits: 2 }) + '%';
+    function niceDate(v) {
+      if (!v) return '';
+      const d = new Date(v + 'T00:00:00'); if (isNaN(d)) return v;
+      return d.toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: '2-digit' });
+    }
+    function renderVoucher(sum, G, n) {
+      const z = v => v ? fmt2(v) : '-';
+      const T = { v: 0, e: 0 }; sum.forEach(s => { T.v = r2(T.v + s[2].v); T.e = r2(T.e + s[2].e); });
+      $('voucher').innerHTML = `
+        <h1>PAYMENT VOUCHER</h1>
+        <div class="sub">Supplier payment &middot; VATable rate ${pctTxt(st.vr)} &middot; VAT-exempt rate ${pctTxt(st.er)}</div>
+        <div class="hdr">
+          <div class="fields">
+            <div><span>Payee</span><b>${esc(st.sup)}</b></div>
+            <div><span>Cheque No.</span><b>${esc(st.chq)}</b></div>
+            <div><span>Payment Date</span><b>${esc(niceDate(st.date))}</b></div>
+          </div>
+          <div class="amtbox"><div class="k">CHEQUE AMOUNT</div><div class="v">${n ? peso(G.net) : '₱0.00'}</div></div>
+        </div>
+        <div class="wordsp">${n && G.net > 0 ? words(G.net) : '&nbsp;'}</div>
+        <table>
+          <thead><tr><th>#</th><th>Receipt No.</th><th>VATable</th><th>VAT-Exempt</th><th>Receipt Amt.</th><th>Addtl. Disc.</th><th>Tax Deduction</th><th>Amount to Pay</th></tr></thead>
+          <tbody>${sum.map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s[0])}</td><td>${z(s[2].v)}</td><td>${z(s[2].e)}</td><td>${fmt2(s[2].a)}</td><td>${z(s[2].disc)}</td><td>${z(s[2].tax)}</td><td><b>${fmt2(s[1])}</b></td></tr>`).join('')}
+            <tr class="gt"><td></td><td>GRAND TOTAL</td><td>${z(T.v)}</td><td>${z(T.e)}</td><td>${fmt2(G.a)}</td><td>${z(G.disc)}</td><td>${z(G.tax)}</td><td>${fmt2(G.net)}</td></tr>
+          </tbody>
+        </table>
+        <div class="note">Addtl. discount is taken off first. Tax deduction = VATable &divide; 1.12 &times; rate, VAT-exempt &times; rate.</div>
+        <div class="sigs"><div><b>${esc(st.prep)}</b>Prepared by</div><div><b></b>Checked by</div><div><b></b>Approved by</div><div><b></b>Received by</div></div>`;
+    }
+
+    function update() {
+      document.querySelectorAll('#segV button').forEach(b => b.classList.toggle('on', Number(b.dataset.r) === st.vr));
+      document.querySelectorAll('#segE button').forEach(b => b.classList.toggle('on', Number(b.dataset.r) === st.er));
+      const errs = new Set(); let G = { a: 0, disc: 0, tax: 0, net: 0 }, n = 0; const sum = [];
+      const cards = box.querySelectorAll('.card.rc');
+      st.rc.forEach((rc, ri) => {
+        const card = cards[ri]; if (!card) return;
+        const rows = card.querySelectorAll('.item'); let R = { a: 0, disc: 0, tax: 0, net: 0, v: 0, e: 0 }, cnt = 0;
+        rc.items.forEach((it, ii) => {
+          const x = itemCalc(it), out = rows[ii] && rows[ii].querySelector('.inet');
+          if (!out) return;
+          if (!x) { out.innerHTML = ''; return; }
+          if (x.err) { errs.add(x.err); out.textContent = '⚠ ' + x.err; return; }
+          cnt++; ['a', 'disc', 'tax', 'net'].forEach(k => R[k] = r2(R[k] + x[k])); if (it.t === 'V') R.v = r2(R.v + x.a); else R.e = r2(R.e + x.a);
+          out.innerHTML = (x.disc ? 'less disc ' + fmt2(x.disc) + ' · ' : '') + 'tax ' + fmt2(x.tax) + ' · net <b>' + fmt2(x.net) + '</b>';
+        });
+        card.querySelector('.rcfoot .amt').textContent = cnt ? peso(R.net) : '–';
+        if (cnt) {
+          n++; ['a', 'disc', 'tax', 'net'].forEach(k => G[k] = r2(G[k] + R[k]));
+          if (!rc.no.trim()) errs.add('Receipt #' + (ri + 1) + ': type the receipt no.');
+          sum.push([rc.no.trim() || 'Receipt #' + (ri + 1), R.net, R]);
+        }
+      });
+      $('vPay').textContent = n ? peso(G.net) : '–';
+      $('vCount').textContent = n + (n === 1 ? ' receipt' : ' receipts');
+      $('vDed').textContent = n ? peso(r2(G.disc + G.tax)) : '–';
+      $('vDedS').textContent = n ? 'Disc ' + fmt2(G.disc) + ' + tax ' + fmt2(G.tax) : 'Discount + tax';
+      $('vTrail').textContent = n ? 'Total ' + peso(G.a) + (G.disc ? ' → less disc ' + peso(G.disc) : '') + ' → less tax ' + peso(G.tax) + ' → pay ' + peso(G.net) : '';
+      $('vErr').textContent = [...errs].join(' ');
+      $('vSum').innerHTML = n ? sum.map(s => `<div class="sumrow"><span></span><span>${fmt2(s[1])}</span></div>`).join('') +
+        `<div class="sumrow tot"><span>Cheque amount</span><span>${peso(G.net)}</span></div>
+         <div class="sumrow sm"><span>Total receipts</span><span>${fmt2(G.a)}</span></div>
+         <div class="sumrow sm"><span>Less addtl. discount</span><span>${fmt2(G.disc)}</span></div>
+         <div class="sumrow sm"><span>Less tax deduction</span><span>${fmt2(G.tax)}</span></div>`
+        : '<div class="hint">Nothing entered yet.</div>';
+      if (n) $('vSum').querySelectorAll('.sumrow:not(.tot):not(.sm) span:first-child').forEach((el, i) => el.textContent = sum[i][0]);
+      $('vWords').textContent = n && G.net > 0 ? words(G.net) : '';
+      renderVoucher(sum, G, n);
+      save();
+    }
+
+    document.querySelectorAll('#segV button').forEach(b => b.addEventListener('click', () => { st.vr = Number(b.dataset.r); update(); }));
+    document.querySelectorAll('#segE button').forEach(b => b.addEventListener('click', () => { st.er = Number(b.dataset.r); update(); }));
+    [['pSup', 'sup'], ['pChq', 'chq'], ['pDate', 'date'], ['pPrep', 'prep']].forEach(([id, k]) => {
+      $(id).addEventListener('input', () => { st[k] = $(id).value; update(); });
+    });
+    const fillDetails = () => { $('pSup').value = st.sup; $('pChq').value = st.chq; $('pDate').value = st.date; $('pPrep').value = st.prep; };
+    $('vPrint').addEventListener('click', () => {
+      const n = st.rc.some(rc => rc.items.some(i => { const x = itemCalc(i); return x && !x.err; }));
+      if (!n) { alert('Enter at least one receipt first.'); return; }
+      if ($('vErr').textContent && !confirm('There are warnings:\n' + $('vErr').textContent + '\n\nPrint anyway?')) return;
+      update(); window.print();
+    });
+    $('addRc').addEventListener('click', newReceipt);
+    // Ctrl+Enter anywhere on the VAT tab = new receipt
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !$('tab-vat').hidden) { e.preventDefault(); newReceipt(); }
+    });
+    $('vClear').addEventListener('click', () => {
+      const has = st.rc.some(rc => rc.no || rc.items.some(i => i.a !== ''));
+      if (has && !confirm('Clear all receipts and start the next supplier?\n\nCheque amount now: ' + $('vPay').textContent)) return;
+      st.rc = [{ no: '', items: [] }]; st.sup = ''; st.chq = ''; st.date = today(); fillDetails(); render(); update(); window.scrollTo(0, 0);
+      box.querySelector('.rno').focus();
+    });
+
+    load();
+    if (!st.rc.length) st.rc.push({ no: '', items: [] });
+    fillDetails(); render(); update();
+  })();
+
+  // keep the right-hand summary just below the green header on big screens
+  const setTopH = () => { const t = document.querySelector('#tab-vat .top'); if (t && t.offsetHeight) document.documentElement.style.setProperty('--toph', t.offsetHeight + 'px'); };
+  window.addEventListener('resize', setTopH); document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTimeout(setTopH, 0)));
+  new MutationObserver(setTopH).observe(document.getElementById('vTrail'), { childList: true, characterData: true, subtree: true });
+  setTopH();
 
   // offline support: lets the phone keep a copy of the app
   if ('serviceWorker' in navigator) {
